@@ -1,0 +1,200 @@
+{
+  "info": {
+    "_postman_id": "b3f8d8e0-1234-5678-9abc-def123456789",
+    "name": "SGE UT Tehuacán",
+    "description": "Colección de pruebas para el Sistema de Gestión Escolar",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@uttehuacan.edu.mx\",\n  \"password\": \"admin123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Profesor)",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@uttehuacan.edu.mx\",\n  \"password\": \"profe123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Alumno)",
+          "request": {
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"carlos@alumnos.ut.mx\",\n  \"password\": \"alumno123\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Admin",
+      "item": [
+        {
+          "name": "Ver Profesores",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/admin/teachers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "teachers"]
+            }
+          }
+        },
+        {
+          "name": "Ver Materias",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/admin/subjects",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "subjects"]
+            }
+          }
+        },
+        {
+          "name": "Asignar Grupo",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_admin}}", "type": "string" }]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"4B\",\n  \"subject_id\": 2,\n  \"teacher_id\": 2,\n  \"period_id\": 1,\n  \"classroom\": \"Laboratorio 1\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/groups",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "groups"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Profesor",
+      "item": [
+        {
+          "name": "Ver Mis Grupos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_profe}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/teacher/2/groups",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teacher", "2", "groups"]
+            }
+          }
+        },
+        {
+          "name": "Ver Alumnos",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_profe}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/teacher/group/1/students",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teacher", "group", "1", "students"]
+            }
+          }
+        },
+        {
+          "name": "Subir Calificación",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_profe}}", "type": "string" }]
+            },
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enrollmentId\": 1,\n  \"p1\": 9.5,\n  \"p2\": 8.0,\n  \"p3\": 10.0,\n  \"finalScore\": 9.1\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/teacher/grade",
+              "host": ["{{base_url}}"],
+              "path": ["api", "teacher", "grade"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Alumno",
+      "item": [
+        {
+          "name": "Ver Historial",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token_alumno}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/student/4/history",
+              "host": ["{{base_url}}"],
+              "path": ["api", "student", "4", "history"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3006" },
+    { "key": "token_admin", "value": "PEGA_AQUI_EL_TOKEN_DE_ADMIN" },
+    { "key": "token_profe", "value": "PEGA_AQUI_EL_TOKEN_DE_PROFE" },
+    { "key": "token_alumno", "value": "PEGA_AQUI_EL_TOKEN_DE_ALUMNO" }
+  ]
+}
