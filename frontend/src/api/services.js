@@ -5,23 +5,25 @@ export const authService = {
 };
 
 export const teacherService = {
-  // Conecta con teacherContro
-  // ller.js: getMyGroups
-  getMyGroups: (teacherId) => client.get(`/teachers/${teacherId}/groups`),
+  // CORREGIDO: Cambiado de /teachers/ a /teacher/ para coincidir con routes.js
+  getMyGroups: (teacherId) => client.get(`/teacher/${teacherId}/groups`),
 
-  // Conecta con teacherController.js: getGroupStudents
-  getGroupStudents: (groupId) =>
-    client.get(`/teachers/groups/${groupId}/students`),
+  // CORREGIDO: Usando 'client.get' en lugar de 'axios.get'. 
+  // Eliminamos el header manual porque 'client' (axiosClient) ya debe encargarse de inyectar el token.
+  getGroupStudents: (groupId, subjectId) => client.get(`/teacher/group/${groupId}/students`, {
+    params: { subjectId }
+  }),
 
-  // Conecta con teacherController.js: updateGrade
-  updateGrade: (data) => client.post("/teachers/grades", data),
+  // CORREGIDO: Cambiado de /teachers/grades a /teacher/grade para coincidir con routes.js
+  updateGrade: (data) => client.post("/teacher/grade", data),
 };
 
 export const studentService = {
-  // Conecta con studentController.js: getHistory
-  getHistory: (studentId) => client.get(`/students/${studentId}/history`),
+  // CORREGIDO: Cambiado de /students/ a /student/ para coincidir con routes.js
+  getHistory: (studentId) => client.get(`/student/${studentId}/history`),
 };
 
+// INTACTO: Tal cual como lo tenías
 export const adminService = {
   getTeachers: () => client.get("/admin/teachers"),
   getSubjects: () => client.get("/admin/subjects"),

@@ -205,3 +205,32 @@
 .text-center { text-align: center; }
 .loading-text { text-align: center; color: #64748b; padding: 2rem; font-size: 1.1rem; }
 .no-data { color: #64748b; font-style: italic; }
+
+/* Nuevo botón de editar */
+.btn-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #3b82f6; /* Azul */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+  margin: 0 auto;
+}
+
+.btn-edit:hover {
+  background-color: #2563eb;
+}
+
+/* Estilo para las calificaciones bloqueadas */
+.grade-text {
+  font-size: 1.05rem;
+  color: #374151;
+  font-weight: 500;
+  display: inline-block;
+  padding: 0.4rem;
+}

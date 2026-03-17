@@ -1,6 +1,6 @@
 -- ==========================================
 -- SCRIPT DE BASE DE DATOS - SGE UT TEHUACÁN
--- VERSIÓN: 2.1 (Sincronizado con Bcrypt)
+-- VERSIÓN: 2.2 (Sincronizado con Bcrypt y Datos Reales)
 -- ==========================================
 
 -- 1. LIMPIEZA
@@ -51,7 +51,7 @@ CREATE TABLE groups (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- TABLA INTERMEDIA: Profesores
+-- TABLA INTERMEDIA: Profesores a Grupos y Materias
 CREATE TABLE group_teachers (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
@@ -73,46 +73,70 @@ CREATE TABLE enrollments (
 CREATE TABLE grades (
     id SERIAL PRIMARY KEY,
     enrollment_id INT REFERENCES enrollments(id) ON DELETE CASCADE,
+    subject_id INT REFERENCES subjects(id) ON DELETE CASCADE,
     p1 DECIMAL(4,2) DEFAULT 0,
     p2 DECIMAL(4,2) DEFAULT 0,
     p3 DECIMAL(4,2) DEFAULT 0,
     final_score DECIMAL(4,2) DEFAULT 0,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(enrollment_id, subject_id)
 );
 
 -- ==========================================
--- DATOS DE PRUEBA (CON HASHES DE BCRYPT)
+-- DATOS DE PRUEBA (HASHES ORIGINALES MANTENIDOS)
 -- ==========================================
 
--- Admin pass: admin123 -> $2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G
--- Profe/Alumno pass: password123 -> $2b$10$8K1p/a06vI.Y6U6Y6u7Ebe.vYhXhZ9/z8V6G.q0DCC.7BvYhXhZ9/z
--- (Nota: Estos hashes son ejemplos compatibles con tu login)
-
 INSERT INTO users (full_name, email, password, role, matricula, area) VALUES 
-('Admin General', 'admin@uttehuacan.edu.mx', '$2b$10$9lj1xZkp9DG4zuWeQLHT5.eDEcySaiDUKI4C3a6nIVDa3kQ8VR6HS', 'admin', 'ADM001', 'Administración'),
-('Ing. Juan Pérez', 'juan.perez@uttehuacan.edu.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'teacher', 'DOC001', 'Ingeniería'),
-('Lic. Maria Lopez', 'maria.g@uttehuacan.edu.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'teacher', 'DOC002', 'Ciencias Básicas'),
-('Carlos Hernandez', 'carlos@alumnos.ut.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'student', 'ALU23001', 'Desarrollo de Software'),
-('Ana Torres', 'ana@alumnos.ut.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'student', 'ALU23002', 'Desarrollo de Software');
+-- ADMINISTRADOR
+('Admin General UT', 'admin@uttehuacan.edu.mx', '$2b$10$9lj1xZkp9DG4zuWeQLHT5.eDEcySaiDUKI4C3a6nIVDa3kQ8VR6HS', 'admin', 'ADM001', 'Administración'),
 
--- Insertar Periodo
+-- PROFESORES (Reutilizando el hash de Maria Lopez para los nuevos profes)
+('Ing. Juan Pérez', 'juan.perez@uttehuacan.edu.mx', '$2b$10$vifci8Qw6kYS6L.hJ2Ytvu/qbNH48.nTivN/PnAhom4AGaPkTi.2O', 'teacher', 'DOC001', 'Tecnologías de la Información'),
+('Lic. Maria Lopez', 'maria.g@uttehuacan.edu.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'teacher', 'DOC002', 'Ciencias Básicas'),
+('Mtro. Roberto Díaz', 'roberto.d@uttehuacan.edu.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'teacher', 'DOC003', 'Mecatrónica'),
+('Ing. Patricia Cruz', 'patricia.cruz@uttehuacan.edu.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'teacher', 'DOC004', 'Tecnologías de la Información'),
+
+-- ALUMNOS (Reutilizando el hash de Ana Torres para los nuevos alumnos)
+('German', 'geryiman0@alumnos.ut.mx', '$2b$10$LxoOeg8GQxVgLob2l5O9QeHUZMVHwbG3EsHu7XgGJZSOTG9Pt/nYu', 'student', 'ALU23001', 'Desarrollo de Software'),
+('Ana Torres', 'ana@alumnos.ut.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'student', 'ALU23002', 'Desarrollo de Software'),
+('Luis Rodríguez', 'luis.r@alumnos.ut.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'student', 'ALU23003', 'Desarrollo de Software'),
+('Sofía Martínez', 'sofia.m@alumnos.ut.mx', '$2b$10$Un8p3AtH/C.FshM7vVclvO9N6.V67mN.q0DCC.7BvYhXhZ9/z8V6G', 'student', 'ALU24001', 'Mecatrónica');
+
+-- Insertar Periodos Reales
 INSERT INTO academic_periods (name, start_date, end_date, is_active) VALUES 
+('Septiembre - Diciembre 2023', '2023-09-01', '2023-12-15', FALSE),
 ('Enero - Abril 2024', '2024-01-07', '2024-04-30', TRUE);
 
--- Insertar Materias
+-- Insertar Materias Reales (Basadas en UT)
 INSERT INTO subjects (name, credits) VALUES 
-('Programación Web', 6),
-('Base de Datos', 5),
+('Aplicaciones Web', 6),
+('Base de Datos para Aplicaciones', 5),
 ('Álgebra Lineal', 5),
-('Inglés IV', 4);
+('Inglés IV', 4),
+('Sistemas Operativos', 4),
+('Física Industrial', 5);
 
--- Crear Grupos
+-- Crear Grupos Estilo UT (TI = Tecnologías de la Info, MEC = Mecatrónica)
 INSERT INTO groups (group_name, cuatrimestre, area, period_id, classroom) VALUES 
-('4B', 4, 'Desarrollo de Software', 1, 'Lab 3 (Cómputo)'), 
-('2A', 2, 'Mecatrónica', 1, 'Edificio K-201'); 
+('TI-41', 4, 'Desarrollo de Software', 2, 'Lab Cómputo C-2'), 
+('MEC-21', 2, 'Mecatrónica', 2, 'Edificio K-201'),
+('TI-11', 1, 'Desarrollo de Software', 2, 'Edificio D-105');
 
--- Asignar Profesores
-INSERT INTO group_teachers (user_id, group_id, subject_id) VALUES (2, 1, 1), (3, 2, 3);
+-- Asignar Profesores a Grupos y MATERIAS
+-- Juan Pérez (2) enseña Aplicaciones Web (1) a TI-41 (1)
+INSERT INTO group_teachers (user_id, group_id, subject_id) VALUES (2, 1, 1);
+-- Patricia Cruz (5) enseña Base de Datos (2) a TI-41 (1)
+INSERT INTO group_teachers (user_id, group_id, subject_id) VALUES (5, 1, 2);
+-- Maria Lopez (3) enseña Álgebra Lineal (3) a MEC-21 (2)
+INSERT INTO group_teachers (user_id, group_id, subject_id) VALUES (3, 2, 3);
 
 -- Inscribir Alumnos
-INSERT INTO enrollments (student_id, group_id) VALUES (4, 1), (5, 1);
+-- TI-41: German (6), Ana Torres (7), Luis Rodríguez (8)
+INSERT INTO enrollments (student_id, group_id) VALUES (6, 1), (7, 1), (8, 1);
+-- MEC-21: Sofía Martínez (9)
+INSERT INTO enrollments (student_id, group_id) VALUES (9, 2);
+
+-- Insertar un par de calificaciones de ejemplo para German en TI-41 (Enrollment ID = 1)
+-- Aplicaciones Web (Subject 1)
+INSERT INTO grades (enrollment_id, subject_id, p1, p2, p3, final_score) 
+VALUES (1, 1, 8.5, 9.0, 0, 5.8); -- Parcial 3 aún no evaluado

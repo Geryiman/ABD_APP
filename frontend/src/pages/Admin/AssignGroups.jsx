@@ -4,27 +4,31 @@ const AssignGroups = ({ token }) => {
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [subjects, setSubjects] = useState([]); // <-- NUEVO ESTADO PARA MATERIAS
   const [message, setMessage] = useState({ type: '', text: '' });
 
   // Estados para los formularios
   const [studentAssign, setStudentAssign] = useState({ userId: '', groupId: '' });
-  const [teacherAssign, setTeacherAssign] = useState({ userId: '', groupId: '' });
+  // <-- SE AGREGÓ subjectId AL ESTADO DEL PROFESOR
+  const [teacherAssign, setTeacherAssign] = useState({ userId: '', groupId: '', subjectId: '' }); 
 
   // Cargar datos iniciales
   const fetchData = useCallback(async () => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       
-      // Traemos grupos, alumnos y profes en paralelo
-      const [resG, resS, resT] = await Promise.all([
+      // Traemos grupos, alumnos, profes y MATERIAS en paralelo
+      const [resG, resS, resT, resSub] = await Promise.all([
         fetch('http://localhost:3006/api/admin/groups', { headers }),
         fetch('http://localhost:3006/api/admin/students', { headers }),
-        fetch('http://localhost:3006/api/admin/teachers', { headers })
+        fetch('http://localhost:3006/api/admin/teachers', { headers }),
+        fetch('http://localhost:3006/api/admin/subjects', { headers }) // <-- NUEVA PETICIÓN
       ]);
 
       if (resG.ok) setGroups(await resG.json());
       if (resS.ok) setStudents(await resS.json());
       if (resT.ok) setTeachers(await resT.json());
+      if (resSub.ok) setSubjects(await resSub.json()); // <-- GUARDAMOS MATERIAS
     } catch (error) {
       console.error("Error cargando datos de asignación:", error);
     }
@@ -58,14 +62,14 @@ const AssignGroups = ({ token }) => {
       const res = await fetch('http://localhost:3006/api/admin/assign-teacher', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(teacherAssign)
+        body: JSON.stringify(teacherAssign) // Ya incluye subjectId
       });
       if (res.ok) {
-        setMessage({ type: 'success', text: 'Profesor vinculado al grupo con éxito.' });
-        setTeacherAssign({ userId: '', groupId: '' });
+        setMessage({ type: 'success', text: 'Profesor vinculado al grupo y materia con éxito.' });
+        setTeacherAssign({ userId: '', groupId: '', subjectId: '' }); // Limpiamos formulario
       } else {
         const err = await res.json();
-        setMessage({ type: 'error', text: err.error || 'El profesor ya está en este grupo.' });
+        setMessage({ type: 'error', text: err.error || 'El profesor ya está en este grupo con esa materia.' });
       }
     } catch (error) { setMessage({ type: 'error', text: 'Error de conexión.' }); }
   };
@@ -129,6 +133,7 @@ const AssignGroups = ({ token }) => {
                 ))}
               </select>
             </div>
+            
             <div className="form-group">
               <label>Grupo a Asignar:</label>
               <select 
@@ -142,6 +147,22 @@ const AssignGroups = ({ token }) => {
                 ))}
               </select>
             </div>
+
+            {/* NUEVO SELECTOR DE MATERIA */}
+            <div className="form-group">
+              <label>Materia que Impartirá:</label>
+              <select 
+                value={teacherAssign.subjectId} 
+                onChange={e => setTeacherAssign({...teacherAssign, subjectId: e.target.value})}
+                required
+              >
+                <option value="">-- Seleccionar Materia --</option>
+                {subjects.map(s => (
+                  <option key={s.id} value={s.id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+
             <button type="submit" className="btn-submit btn-teacher">Vincular Profesor</button>
           </form>
         </section>
